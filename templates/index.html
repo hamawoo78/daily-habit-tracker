@@ -1,137 +1,389 @@
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Do Your Best - Habit Tracker{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <title>Do Your Best - Mood Tracker</title>
+{% block extra_css %}
+<style>
+    /* Page-specific styles for the habit tracker */
+    .main-content {
+        background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
+        min-height: calc(100vh - 70px);
+        padding: 30px;
+        width: 100%;
+        max-width: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .form-container {
+        background: linear-gradient(135deg, #FFE5E5 0%, #FFC0CB 100%);
+        border-radius: 30px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border: 3px solid white;
+        position: relative;
+    }
+    
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(135deg, #FF5F5F, #FF3838);
+        border-radius: 30px;
+        z-index: -1;
+    }
+    
+    /* Mobile responsive */
+    @media screen and (max-width: 768px) {
+        .main-content {
+            padding: 20px;
+        }
+        
+        .form-container {
+            padding: 30px 20px;
+        }
+    }
+    
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .motto {
+        font-size: 12px;
+        color: #D4AF37;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .title {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        color: #D4AF37;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        line-height: 1.2;
+    }
+    
+    .subtitle {
+        font-size: 11px;
+        color: #D4AF37;
+        letter-spacing: 3px;
+        font-weight: 600;
+    }
+    
+    .greeting {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .greeting h2 {
+        font-size: 24px;
+        color: #FF3838;
+        margin-bottom: 5px;
+    }
+    
+    .date {
+        font-size: 14px;
+        color: #666;
+        font-weight: 300;
+    }
+    
+    .form-section {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+        font-size: 15px;
+    }
+    
+    .mood-options {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    
+    .mood-btn {
+        flex: 1;
+        padding: 15px 5px;
+        background: white;
+        border: 3px solid transparent;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 32px;
+        text-align: center;
+    }
+    
+    .mood-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mood-btn.selected {
+        border-color: #D4AF37;
+        background: #FFF8E7;
+        transform: scale(1.1);
+    }
+    
+    .sleep-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    
+    .sleep-btn {
+        padding: 12px;
+        background: white;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+    
+    .sleep-btn:hover {
+        background: #FFF8E7;
+        transform: translateY(-2px);
+    }
+    
+    .sleep-btn.selected {
+        background: #D4AF37;
+        color: white;
+        border-color: #B8941F;
+    }
+    
+    .yoga-toggle {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .yoga-btn {
+        flex: 1;
+        padding: 15px;
+        background: white;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+    }
+    
+    .yoga-btn:hover {
+        background: #FFF8E7;
+    }
+    
+    .yoga-btn.selected {
+        background: #D4AF37;
+        color: white;
+        border-color: #B8941F;
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid white;
+        border-radius: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 80px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    textarea:focus {
+        outline: none;
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+    }
+    
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+    
+    input[type="radio"] {
+        display: none;
+    }
+    
+    .success-message {
+        background: #D4AF37;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .success-message a {
+        color: white;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
 
-</head>
-<body>
-    <div class="container">
-        <!-- <div class="header">
+{% block content %}
+<div class="form-container">
+        <div class="header">
             <div class="motto">DON'T STRESS</div>
             <div class="title">Do<br>Your<br>Best</div>
             <div class="subtitle">FORGET THE REST</div>
-        </div> -->
+        </div>
         
         <div class="greeting">
-            <h2>Hello {{ username }}! 👋</h2>
-            <div class="date" id="currentDate"></div>
+            {% if editing %}
+                <h2>Edit Entry for {{ today|date:"M d, Y" }} ✏️</h2>
+                <div class="date">Update your mood tracking entry</div>
+            {% else %}
+                <h2>Hello {{ username }}! 👋</h2>
+                <div class="date">{{ today|date:"l, F d, Y" }}</div>
+            {% endif %}
         </div>
         
-        <div class="form-section">
-            <label class="form-label">How are you feeling today?</label>
-            <div class="mood-options">
-                <button class="mood-btn" data-mood="1" title="Terrible">😢</button>
-                <button class="mood-btn" data-mood="2" title="Not Great">😕</button>
-                <button class="mood-btn" data-mood="3" title="Okay">😐</button>
-                <button class="mood-btn" data-mood="4" title="Good">😊</button>
-                <button class="mood-btn" data-mood="5" title="Amazing">😄</button>
+        {% if today_entry and not editing %}
+            <div class="success-message">
+                ✨ You've already logged your mood today! Check your <a href="{% url 'mood_history' %}">history</a> to see past entries.
             </div>
-        </div>
+        {% else %}
         
-        <div class="form-section">
-            <label class="form-label">How much sleep did you get?</label>
-            <div class="sleep-grid">
-                <button class="sleep-btn" data-sleep="1">4h-</button>
-                <button class="sleep-btn" data-sleep="2">5h</button>
-                <button class="sleep-btn" data-sleep="3">6h</button>
-                <button class="sleep-btn" data-sleep="4">7h</button>
-                <button class="sleep-btn" data-sleep="5">8h</button>
-                <button class="sleep-btn" data-sleep="6">9h+</button>
+        <form method="POST" id="moodForm">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <label class="form-label">How are you feeling today?</label>
+                <div class="mood-options">
+                    <label class="mood-btn{% if today_entry.mood == 1 %} selected{% endif %}" title="Terrible">
+                        <input type="radio" name="mood" value="1" required{% if today_entry.mood == 1 %} checked{% endif %}>
+                        😢
+                    </label>
+                    <label class="mood-btn{% if today_entry.mood == 2 %} selected{% endif %}" title="Not Great">
+                        <input type="radio" name="mood" value="2" required{% if today_entry.mood == 2 %} checked{% endif %}>
+                        😕
+                    </label>
+                    <label class="mood-btn{% if today_entry.mood == 3 %} selected{% endif %}" title="Okay">
+                        <input type="radio" name="mood" value="3" required{% if today_entry.mood == 3 %} checked{% endif %}>
+                        😐
+                    </label>
+                    <label class="mood-btn{% if today_entry.mood == 4 %} selected{% endif %}" title="Good">
+                        <input type="radio" name="mood" value="4" required{% if today_entry.mood == 4 %} checked{% endif %}>
+                        😊
+                    </label>
+                    <label class="mood-btn{% if today_entry.mood == 5 %} selected{% endif %}" title="Amazing">
+                        <input type="radio" name="mood" value="5" required{% if today_entry.mood == 5 %} checked{% endif %}>
+                        😄
+                    </label>
+                </div>
             </div>
-        </div>
-        
-        <div class="form-section">
-            <label class="form-label">Did you do yoga today?</label>
-            <div class="yoga-toggle">
-                <button class="yoga-btn" data-yoga="yes">Yes 🧘</button>
-                <button class="yoga-btn" data-yoga="no">No</button>
+            
+            <div class="form-section">
+                <label class="form-label">How much sleep did you get?</label>
+                <div class="sleep-grid">
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 1 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="1" required{% if today_entry.sleep_duration == 1 %} checked{% endif %}>
+                        4h-
+                    </label>
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 2 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="2" required{% if today_entry.sleep_duration == 2 %} checked{% endif %}>
+                        5h
+                    </label>
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 3 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="3" required{% if today_entry.sleep_duration == 3 %} checked{% endif %}>
+                        6h
+                    </label>
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 4 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="4" required{% if today_entry.sleep_duration == 4 %} checked{% endif %}>
+                        7h
+                    </label>
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 5 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="5" required{% if today_entry.sleep_duration == 5 %} checked{% endif %}>
+                        8h
+                    </label>
+                    <label class="sleep-btn{% if today_entry.sleep_duration == 6 %} selected{% endif %}">
+                        <input type="radio" name="sleep_duration" value="6" required{% if today_entry.sleep_duration == 6 %} checked{% endif %}>
+                        9h+
+                    </label>
+                </div>
             </div>
-        </div>
+            
+            <div class="form-section">
+                <label class="form-label">Did you do yoga today?</label>
+                <div class="yoga-toggle">
+                    <label class="yoga-btn{% if today_entry.yoga %} selected{% endif %}">
+                        <input type="radio" name="yoga" value="yes" required{% if today_entry.yoga %} checked{% endif %}>
+                        Yes 🧘
+                    </label>
+                    <label class="yoga-btn{% if not today_entry.yoga %} selected{% endif %}">
+                        <input type="radio" name="yoga" value="no" required{% if not today_entry.yoga %} checked{% endif %}>
+                        No
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <label class="form-label">Add a comment</label>
+                <textarea name="note" placeholder="What's on your mind today?">{% if today_entry.note %}{{ today_entry.note }}{% endif %}</textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                {% if editing %}Update Entry ✨{% else %}Track My Day ✨{% endif %}
+            </button>
+        </form>
         
-        <div class="form-section">
-            <label class="form-label">Add a comment</label>
-            <textarea id="comment" placeholder="What's on your mind today?"></textarea>
-        </div>
-        
-        <button class="submit-btn" onclick="submitEntry()">Track My Day ✨</button>
-    </div>
-    
-    <script>
-        let selectedMood = null;
-        let selectedSleep = null;
-        let selectedYoga = null;
-        
-        // Display current date
-        const dateElement = document.getElementById('currentDate');
-        const today = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dateElement.textContent = today.toLocaleDateString('en-US', options);
-        
-        // Username is now handled by Django template system
-        
-        // Mood selection
-        document.querySelectorAll('.mood-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedMood = this.dataset.mood;
+        {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle button selection UI
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Remove selected class from siblings
+            const parent = this.closest('.mood-options, .sleep-grid, .yoga-toggle');
+            parent.querySelectorAll('label').forEach(label => {
+                label.classList.remove('selected');
             });
+            
+            // Add selected class to current label
+            this.closest('label').classList.add('selected');
         });
-        
-        // Sleep selection
-        document.querySelectorAll('.sleep-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.sleep-btn').forEach(b => b.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedSleep = this.dataset.sleep;
-            });
-        });
-        
-        // Yoga selection
-        document.querySelectorAll('.yoga-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.yoga-btn').forEach(b => b.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedYoga = this.dataset.yoga;
-            });
-        });
-        
-        function submitEntry() {
-            const comment = document.getElementById('comment').value;
-            
-            if (!selectedMood || !selectedSleep || !selectedYoga) {
-                alert('Please complete all fields! 💫');
-                return;
-            }
-            
-            const entry = {
-                date: today.toISOString(),
-                mood: selectedMood,
-                sleep: selectedSleep,
-                yoga: selectedYoga,
-                comment: comment
-            };
-            
-            // Save to localStorage
-            let entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
-            entries.push(entry);
-            localStorage.setItem('moodEntries', JSON.stringify(entries));
-            
-            alert('🌟 Entry saved! You\'re doing your best! 🌟');
-            
-            // Reset form
-            document.querySelectorAll('.mood-btn, .sleep-btn, .yoga-btn').forEach(b => b.classList.remove('selected'));
-            document.getElementById('comment').value = '';
-            selectedMood = null;
-            selectedSleep = null;
-            selectedYoga = null;
-        }
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Entries - Do Your Best{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page-specific styles for entries page */
+    .main-content {
+        background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
+        min-height: calc(100vh - 70px);
+        padding: 30px;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .header {
+        text-align: center;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #FF5F5F 0%, #FF3838 100%);
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(255, 56, 56, 0.3);
+    }
+    
+    .header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        color: white;
+        margin-bottom: 10px;
+    }
+    
+    .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 16px;
+    }
+    
+    .search-filter {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .search-filter input,
+    .search-filter select {
+        padding: 10px 15px;
+        border: 2px solid #FFE5E5;
+        border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .search-filter input:focus,
+    .search-filter select:focus {
+        outline: none;
+        border-color: #FF5F5F;
+    }
+    
+    .entries-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .entries-count {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    
+    .entry-card {
+        background: linear-gradient(135deg, #FFF8F8 0%, #FFFFFF 100%);
+        border: 2px solid #FFE5E5;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .entry-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-color: #FFD0D0;
+    }
+    
+    .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .entry-date {
+        font-size: 18px;
+        font-weight: 600;
+        color: #FF3838;
+    }
+    
+    .entry-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-edit {
+        background: #D4AF37;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #B8941F;
+        transform: scale(1.05);
+    }
+    
+    .btn-delete {
+        background: #FF5F5F;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background: #FF3838;
+        transform: scale(1.05);
+    }
+    
+    .entry-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .detail-icon {
+        font-size: 28px;
+    }
+    
+    .detail-text {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detail-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .detail-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .entry-note {
+        background: #FFF8F0;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #D4AF37;
+        margin-top: 15px;
+    }
+    
+    .note-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    
+    .note-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+    
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    /* Delete Confirmation Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.show {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #FF3838;
+        margin-bottom: 15px;
+    }
+    
+    .modal-text {
+        color: #666;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .modal-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .modal-btn.cancel {
+        background: #F0F0F0;
+        color: #666;
+    }
+    
+    .modal-btn.cancel:hover {
+        background: #E0E0E0;
+    }
+    
+    .modal-btn.confirm {
+        background: #FF5F5F;
+        color: white;
+    }
+    
+    .modal-btn.confirm:hover {
+        background: #FF3838;
+    }
+    
+    /* Mobile responsive */
+    @media screen and (max-width: 768px) {
+        .main-content {
+            padding: 20px;
+        }
+        
+        .header {
+            padding: 30px 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+        }
+        
+        .entry-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .entry-details {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-filter {
+            flex-direction: column;
+        }
+        
+        .search-filter input,
+        .search-filter select {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>All Mood Entries 📝</h1>
+    <p>Hello {{ username }}! Here are all your mood tracking records</p>
+</div>
+    
+    <!-- Search and Filter -->
+    <div class="search-filter">
+        <input type="text" id="searchInput" placeholder="🔍 Search by date or note...">
+        <select id="moodFilter">
+            <option value="">All Moods</option>
+            <option value="5">😄 Amazing</option>
+            <option value="4">😊 Good</option>
+            <option value="3">😐 Okay</option>
+            <option value="2">😕 Not Great</option>
+            <option value="1">😢 Terrible</option>
+        </select>
+        <select id="yogaFilter">
+            <option value="">All Yoga Status</option>
+            <option value="yes">🧘 Did Yoga</option>
+            <option value="no">❌ No Yoga</option>
+        </select>
+    </div>
+    
+    <div class="entries-container">
+        <div class="entries-count">
+            Showing <strong>{{ entries|length }}</strong> entries
+        </div>
+        
+        {% if entries %}
+            <div id="entriesList">
+            {% for entry in entries %}
+            <div class="entry-card" 
+                 data-mood="{{ entry.mood }}" 
+                 data-yoga="{{ entry.yoga|yesno:'yes,no' }}"
+                 data-date="{{ entry.date|date:'Y-m-d' }}"
+                 data-note="{{ entry.note|lower }}">
+                <div class="entry-header">
+                    <div class="entry-date">
+                        📅 {{ entry.date|date:"l, F d, Y" }}
+                    </div>
+                    <div class="entry-actions">
+                        <a href="{% url 'edit_entry' entry.id %}" class="btn btn-edit">
+                            ✏️ Edit
+                        </a>
+                        <button class="btn btn-delete" 
+                                data-entry-id="{{ entry.id }}" 
+                                data-entry-date="{{ entry.date|date:'M d, Y' }}"
+                                onclick="confirmDelete(this.dataset.entryId, this.dataset.entryDate)">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="entry-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            {% if entry.mood == 1 %}😢
+                            {% elif entry.mood == 2 %}😕
+                            {% elif entry.mood == 3 %}😐
+                            {% elif entry.mood == 4 %}😊
+                            {% elif entry.mood == 5 %}😄
+                            {% endif %}
+                        </div>
+                        <div class="detail-text">
+                            <span class="detail-label">Mood</span>
+                            <span class="detail-value">
+                                {% if entry.mood == 1 %}Terrible
+                                {% elif entry.mood == 2 %}Not Great
+                                {% elif entry.mood == 3 %}Okay
+                                {% elif entry.mood == 4 %}Good
+                                {% elif entry.mood == 5 %}Amazing
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">😴</div>
+                        <div class="detail-text">
+                            <span class="detail-label">Sleep</span>
+                            <span class="detail-value">
+                                {% if entry.sleep_duration == 1 %}4h-
+                                {% elif entry.sleep_duration == 2 %}5h
+                                {% elif entry.sleep_duration == 3 %}6h
+                                {% elif entry.sleep_duration == 4 %}7h
+                                {% elif entry.sleep_duration == 5 %}8h
+                                {% elif entry.sleep_duration == 6 %}9h+
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            {% if entry.yoga %}🧘{% else %}❌{% endif %}
+                        </div>
+                        <div class="detail-text">
+                            <span class="detail-label">Yoga</span>
+                            <span class="detail-value">
+                                {% if entry.yoga %}Yes{% else %}No{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if entry.note %}
+                <div class="entry-note">
+                    <div class="note-label">Note</div>
+                    <div class="note-text">{{ entry.note }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>No entries found!</p>
+                <p>Start tracking your mood to see entries here.</p>
+            </div>
+        {% endif %}
+    </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Delete Entry?</h3>
+        <p class="modal-text">
+            Are you sure you want to delete the entry from <strong id="deleteDate"></strong>? 
+            This action cannot be undone.
+        </p>
+        <form id="deleteForm" method="POST">
+            {% csrf_token %}
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="modal-btn confirm">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search and Filter functionality
+    const searchInput = document.getElementById('searchInput');
+    const moodFilter = document.getElementById('moodFilter');
+    const yogaFilter = document.getElementById('yogaFilter');
+    const entryCards = document.querySelectorAll('.entry-card');
+    
+    function filterEntries() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedMood = moodFilter.value;
+        const selectedYoga = yogaFilter.value;
+        
+        let visibleCount = 0;
+        
+        entryCards.forEach(card => {
+            const date = card.dataset.date;
+            const note = card.dataset.note;
+            const mood = card.dataset.mood;
+            const yoga = card.dataset.yoga;
+            
+            const matchesSearch = date.includes(searchTerm) || note.includes(searchTerm);
+            const matchesMood = !selectedMood || mood === selectedMood;
+            const matchesYoga = !selectedYoga || yoga === selectedYoga;
+            
+            if (matchesSearch && matchesMood && matchesYoga) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update count
+        document.querySelector('.entries-count strong').textContent = visibleCount;
+    }
+    
+    searchInput.addEventListener('input', filterEntries);
+    moodFilter.addEventListener('change', filterEntries);
+    yogaFilter.addEventListener('change', filterEntries);
+    
+    // Delete confirmation modal
+    function confirmDelete(entryId, date) {
+        const modal = document.getElementById('deleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteDate = document.getElementById('deleteDate');
+        
+        deleteDate.textContent = date;
+        deleteForm.action = `/delete/${entryId}/`;
+        modal.classList.add('show');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+    }
+    
+    // Close modal on outside click
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+</script>
+{% endblock %}

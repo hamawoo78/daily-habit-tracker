@@ -10,9 +10,20 @@ from datetime import date
 import calendar
 import json
 
-# @login_required
 def habits_tracker(request):
     """Main mood tracker page"""
+    # Check if user is authenticated
+    if not request.user.is_authenticated:
+        # Check if any users exist in the system (first time app usage)
+        if not User.objects.exists():
+            # First time using the app - redirect to signup
+            messages.info(request, 'Welcome to Do Your Best! 🌟 Create your account to start your wellness journey.')
+            return redirect('signup_view')
+        else:
+            # Users exist but this one isn't logged in - redirect to login
+            messages.info(request, 'Please log in to access your habit tracker.')
+            return redirect('login_view')
+    
     # Get or create the default habit for this user
     action, created = Action.objects.get_or_create(
         user=request.user,
@@ -233,6 +244,23 @@ def mood_history(request):
     return render(request, 'habits/history.html', context)
 
 @login_required
+def all_entries(request):
+    """View all mood entries with search and filter"""
+    # Get the user's Daily Mood habit
+    try:
+        habit = Action.objects.get(user=request.user, name="Daily Mood")
+        entries = MoodEntry.objects.filter(habit=habit).order_by('-date')
+    except Action.DoesNotExist:
+        entries = []
+    
+    context = {
+        'entries': entries,
+        'username': request.user.first_name or request.user.username,
+    }
+    
+    return render(request, 'habits/entries.html', context)
+
+@login_required
 def delete_entry(request, entry_id):
     """Delete a mood entry"""
     if request.method == 'POST':
@@ -243,37 +271,39 @@ def delete_entry(request, entry_id):
         except MoodEntry.DoesNotExist:
             messages.error(request, 'Entry not found!')
     
-    return redirect('mood_history')
+    return redirect('all_entries')
 
 
-# @login_required
-# def edit_entry(request, entry_id):
-#     """Edit an existing mood entry"""
-#     entry = get_object_or_404(MoodEntry, id=entry_id, habit__user=request.user)
+@login_required
+def edit_entry(request, entry_id):
+    """Edit an existing mood entry"""
+    entry = get_object_or_404(MoodEntry, id=entry_id, habit__user=request.user)
     
-#     if request.method == 'POST':
-#         mood = request.POST.get('mood')
-#         sleep_duration = request.POST.get('sleep_duration')
-#         yoga = request.POST.get('yoga')
-#         note = request.POST.get('note', '')
+    if request.method == 'POST':
+        mood = request.POST.get('mood')
+        sleep_duration = request.POST.get('sleep_duration')
+        yoga = request.POST.get('yoga')
+        note = request.POST.get('note', '')
         
-#         if mood and sleep_duration and yoga:
-#             entry.mood = int(mood)
-#             entry.sleep_duration = int(sleep_duration)
-#             entry.yoga = True if yoga == 'yes' else False
-#             entry.note = note
-#             entry.save()
+        if mood and sleep_duration and yoga:
+            entry.mood = int(mood)
+            entry.sleep_duration = int(sleep_duration)
+            entry.yoga = True if yoga == 'yes' else False
+            entry.note = note
+            entry.save()
             
-#             messages.success(request, '✨ Entry updated successfully!')
-#             return redirect('mood_history')
+            messages.success(request, '✨ Entry updated successfully!')
+            return redirect('all_entries')
     
-#     context = {
-#         'entry': entry,
-#         'username': request.user.first_name or request.user.username,
-#         'editing': True,
-#     }
+    context = {
+        'entry': entry,
+        'username': request.user.first_name or request.user.username,
+        'editing': True,
+        'today': entry.date,
+        'today_entry': entry,
+    }
     
-#     return render(request, 'habits/tracker.html', context)
+    return render(request, 'index.html', context)
 
 
 def signup_view(request):
@@ -281,44 +311,60 @@ def signup_view(request):
     if request.user.is_authenticated:
         return redirect('habits_tracker')
     
+    # Check if this is the first user (first time app usage)
+    is_first_user = not User.objects.exists()
+    
     if request.method == 'POST':
         username = request.POST.get('username')
         first_name = request.POST.get('first_name')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
+        print(first_name)
         
         # Validation
         if not all([username, first_name, password1, password2]):
             messages.error(request, 'Please fill in all required fields!')
-            return render(request, 'habits/signup.html')
+            context = {'is_first_user': is_first_user}
+            return render(request, 'habits/signup.html', context)
         
         if password1 != password2:
             messages.error(request, 'Passwords do not match!')
-            return render(request, 'habits/signup.html')
+            context = {'is_first_user': is_first_user}
+            return render(request, 'habits/signup.html', context)
         
         if len(password1) < 8:
             messages.error(request, 'Password must be at least 8 characters long!')
-            return render(request, 'habits/signup.html')
+            context = {'is_first_user': is_first_user}
+            return render(request, 'habits/signup.html', context)
         
         try:
             # Create user
             user = User.objects.create_user(
                 username=username,
-                first_name=first_name,
-                email=email,
                 password=password1
             )
             
+            # Set first name explicitly
+            user.first_name = first_name
+            user.save()
+            
             # Log the user in
             login(request, user)
-            messages.success(request, f'Welcome {first_name}! 🎉')
+            if is_first_user:
+                messages.success(request, f'Welcome to Do Your Best, {first_name}! 🎉 Let\'s start your wellness journey!')
+            else:
+                messages.success(request, f'Welcome {first_name}! 🎉')
             return redirect('habits_tracker')
             
         except IntegrityError:
             messages.error(request, 'Username already exists!')
-            return render(request, 'habits/signup.html')
+            context = {'is_first_user': is_first_user}
+            return render(request, 'habits/signup.html', context)
     
-    return render(request, 'habits/signup.html')
+    context = {
+        'is_first_user': is_first_user
+    }
+    return render(request, 'habits/signup.html', context)
 
 
 def login_view(request):

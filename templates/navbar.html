@@ -1,0 +1,314 @@
+{% load static %}
+
+<nav class="navbar" id="navbar">
+    <div class="navbar-container">
+        <div class="nav-brand">
+            <a href="{% url 'habits_tracker' %}">
+                <span class="brand-icon">✨</span>
+                <span class="brand-text">Do Your Best</span>
+            </a>
+        </div>
+        
+        <div class="nav-menu" id="navMenu">
+            <a href="{% url 'habits_tracker' %}" class="nav-link">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="{% url 'mood_history' %}" class="nav-link">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">History</span>
+            </a>
+            <a href="{% url 'all_entries' %}" class="nav-link">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">All Entries</span>
+            </a>
+            
+            {% if user.is_authenticated %}
+                <div class="nav-user">
+                    <span class="user-greeting">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">Hi, {{ user.first_name|default:user.username }}!</span>
+                    </span>
+                    <a href="{% url 'logout_view' %}" class="nav-link logout-link">
+                        <span class="nav-icon">👋</span>
+                        <span class="nav-text">Logout</span>
+                    </a>
+                </div>
+            {% else %}
+                <a href="{% url 'login_view' %}" class="nav-link">
+                    <span class="nav-icon">🔑</span>
+                    <span class="nav-text">Login</span>
+                </a>
+                <a href="{% url 'signup_view' %}" class="nav-link">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-text">Sign Up</span>
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="nav-hamburger" id="navHamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
+<style>
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(90deg, #FF5F5F 0%, #FF3838 100%);
+    box-shadow: 0 2px 10px rgba(255, 56, 56, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.brand-icon {
+    font-size: 28px;
+    margin-right: 10px;
+}
+
+.brand-text {
+    font-family: 'Playfair Display', serif;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-icon {
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.nav-text {
+    font-size: 14px;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-greeting {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.logout-link {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.nav-hamburger span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 3px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+.nav-hamburger.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-hamburger.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    .navbar-container {
+        padding: 0 15px;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(180deg, #FF5F5F 0%, #FF3838 100%);
+        flex-direction: column;
+        padding: 20px 0;
+        transform: translateY(-100vh);
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 10px rgba(255, 56, 56, 0.3);
+    }
+    
+    .nav-menu.active {
+        transform: translateY(0);
+    }
+    
+    .nav-hamburger {
+        display: flex;
+    }
+    
+    .nav-brand a {
+        font-size: 20px;
+    }
+    
+    .brand-icon {
+        font-size: 24px;
+        margin-right: 8px;
+    }
+    
+    .nav-link {
+        padding: 15px 20px;
+        margin: 5px 20px;
+        justify-content: flex-start;
+    }
+    
+    .nav-user {
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0 0 0;
+        padding: 20px 0 0 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
+    }
+    
+    .user-greeting {
+        padding: 10px 20px;
+        justify-content: flex-start;
+    }
+    
+    .logout-link {
+        margin: 0 20px;
+    }
+}
+
+/* Very small screens */
+@media screen and (max-width: 480px) {
+    .nav-brand a {
+        font-size: 18px;
+    }
+    
+    .brand-icon {
+        font-size: 22px;
+        margin-right: 6px;
+    }
+    
+    .nav-text {
+        font-size: 13px;
+    }
+}
+</style>
+
+<!-- Mobile overlay -->
+<div class="navbar-overlay" id="navbarOverlay"></div>
+
+<script>
+// Navbar toggle for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('navHamburger');
+    const navMenu = document.getElementById('navMenu');
+    const overlay = document.getElementById('navbarOverlay');
+    
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking a link (mobile only)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            });
+        });
+        
+        // Close menu when clicking outside (mobile)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 768) {
+                if (!hamburger.contains(event.target) && !navMenu.contains(event.target)) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            }
+        });
+    }
+    
+    // Set active link based on current page
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>

@@ -17,8 +17,13 @@
         </div>
         
         <div class="greeting">
-            <h2>Welcome! 🌟</h2>
-            <div class="date">Create your account to start tracking</div>
+            {% if is_first_user %}
+                <h2>Welcome to Do Your Best! 🌟</h2>
+                <div class="date">You're the first user! Let's start your wellness journey</div>
+            {% else %}
+                <h2>Welcome! 🌟</h2>
+                <div class="date">Create your account to start tracking</div>
+            {% endif %}
         </div>
 
         {% if messages %}
@@ -36,6 +41,12 @@
                 <label class="form-label" for="username">Username</label>
                 <input type="text" id="username" name="username" required 
                        placeholder="Choose a username" class="form-input">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label" for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" required 
+                       placeholder="Enter your first name" class="form-input">
             </div>
             
             

@@ -1,10 +1,9 @@
+
 /* Page-specific styles for history page */
 .main-content {
     background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
-    min-height: calc(100vh - 70px);
+    min-height: 100vh;
     padding: 30px;
-    width: 100%;
-    max-width: none;
 }
 
 .header {
@@ -14,6 +13,30 @@
     border-radius: 20px;
     margin-bottom: 40px;
     box-shadow: 0 10px 30px rgba(255, 56, 56, 0.3);
+}
+
+/* Mobile: Use container styling */
+@media screen and (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+    }
+    
+    .header {
+        padding: 30px 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 
 .header h1 {
@@ -28,32 +51,19 @@
     font-size: 16px;
 }
 
-/* Desktop: 4 columns in one row - Only on screens wide enough */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
     margin-bottom: 40px;
-    width: 100%;
-    max-width: none;
-}
-
-/* Force 4 columns on wider screens */
-@media screen and (min-width: 1200px) {
-    .stats-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 25px;
-    }
 }
 
 .stat-card {
     background: white;
-    padding: 20px 15px;
+    padding: 25px;
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    min-width: 0; /* Prevent grid items from overflowing */
-    flex: 1;
 }
 
 .stat-emoji {
@@ -141,43 +151,16 @@
     margin-top: 30px;
 }
 
-/* Tablets: 2 columns only on smaller screens */
-@media screen and (max-width: 900px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 20px;
-    }
-}
-
-/* Mobile: Use container styling */
-@media screen and (max-width: 768px) {
-    .main-content {
-        padding: 20px;
-    }
-    
-    .header {
-        padding: 30px 20px;
-        margin-bottom: 30px;
-    }
-    
+@media (max-width: 768px) {
     .header h1 {
         font-size: 32px;
     }
     
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .chart-wrapper {
         height: 300px;
-    }
-}
-
-/* Small mobile: single column */
-@media screen and (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr !important;
-        gap: 15px;
     }
 }
