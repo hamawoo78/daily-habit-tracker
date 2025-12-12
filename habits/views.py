@@ -90,7 +90,7 @@ def habits_tracker(request):
         'today_entry': today_entry,
     }
     
-    return render(request, 'index.html', context)
+    return render(request, 'habits/index.html', context)
 
 
 @login_required
@@ -303,7 +303,7 @@ def edit_entry(request, entry_id):
         'today_entry': entry,
     }
     
-    return render(request, 'index.html', context)
+    return render(request, 'habits/index.html', context)
 
 
 def signup_view(request):

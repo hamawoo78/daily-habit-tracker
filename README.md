@@ -17,7 +17,7 @@ A Django-based daily wellness tracker to log mood, sleep, yoga, and reflections.
 
 ## Setup (local)
 ```bash
-git clone https://github.com/YOUR_USERNAME/daily-habit-tracker.git
+git clone https://github.com/hamawoo78/daily-habit-tracker
 cd daily-habit-tracker
 python -m venv venv
 pip install django

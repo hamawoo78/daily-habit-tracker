@@ -11,7 +11,6 @@
     text-align: center;
     padding: 40px 30px;
     background: linear-gradient(135deg, #FF5F5F 0%, #FF3838 100%);
-    border-radius: 20px;
     margin-bottom: 40px;
     box-shadow: 0 10px 30px rgba(255, 56, 56, 0.3);
 }
@@ -28,22 +27,14 @@
     font-size: 16px;
 }
 
-/* Desktop: 4 columns in one row - Only on screens wide enough */
+/* Desktop: 4 columns in one row - Force horizontal alignment */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 20px;
     margin-bottom: 40px;
     width: 100%;
     max-width: none;
-}
-
-/* Force 4 columns on wider screens */
-@media screen and (min-width: 1200px) {
-    .stats-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 25px;
-    }
 }
 
 .stat-card {
@@ -141,8 +132,8 @@
     margin-top: 30px;
 }
 
-/* Tablets: 2 columns only on smaller screens */
-@media screen and (max-width: 900px) {
+/* Large tablets: 2 columns */
+@media screen and (max-width: 1024px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 20px;

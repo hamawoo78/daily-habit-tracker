@@ -21,7 +21,8 @@ SLEEP_DURATION_CHOICES = [
 
 class Action(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100) 
+    # for future use incase I want to add more activities rather than mood
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -40,7 +40,8 @@ class Command(BaseCommand):
             return
 
         # Get or create the default habit for this user
-        habit, created = Action.objects.get_or_create(
+        
+        , created = Action.objects.get_or_create(
             user=user,
             name="Daily Mood"
         )
