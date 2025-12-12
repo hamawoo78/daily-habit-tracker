@@ -1,0 +1,137 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Do Your Best - Mood Tracker</title>
+
+</head>
+<body>
+    <div class="container">
+        <!-- <div class="header">
+            <div class="motto">DON'T STRESS</div>
+            <div class="title">Do<br>Your<br>Best</div>
+            <div class="subtitle">FORGET THE REST</div>
+        </div> -->
+        
+        <div class="greeting">
+            <h2>Hello {{ username }}! 👋</h2>
+            <div class="date" id="currentDate"></div>
+        </div>
+        
+        <div class="form-section">
+            <label class="form-label">How are you feeling today?</label>
+            <div class="mood-options">
+                <button class="mood-btn" data-mood="1" title="Terrible">😢</button>
+                <button class="mood-btn" data-mood="2" title="Not Great">😕</button>
+                <button class="mood-btn" data-mood="3" title="Okay">😐</button>
+                <button class="mood-btn" data-mood="4" title="Good">😊</button>
+                <button class="mood-btn" data-mood="5" title="Amazing">😄</button>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <label class="form-label">How much sleep did you get?</label>
+            <div class="sleep-grid">
+                <button class="sleep-btn" data-sleep="1">4h-</button>
+                <button class="sleep-btn" data-sleep="2">5h</button>
+                <button class="sleep-btn" data-sleep="3">6h</button>
+                <button class="sleep-btn" data-sleep="4">7h</button>
+                <button class="sleep-btn" data-sleep="5">8h</button>
+                <button class="sleep-btn" data-sleep="6">9h+</button>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <label class="form-label">Did you do yoga today?</label>
+            <div class="yoga-toggle">
+                <button class="yoga-btn" data-yoga="yes">Yes 🧘</button>
+                <button class="yoga-btn" data-yoga="no">No</button>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <label class="form-label">Add a comment</label>
+            <textarea id="comment" placeholder="What's on your mind today?"></textarea>
+        </div>
+        
+        <button class="submit-btn" onclick="submitEntry()">Track My Day ✨</button>
+    </div>
+    
+    <script>
+        let selectedMood = null;
+        let selectedSleep = null;
+        let selectedYoga = null;
+        
+        // Display current date
+        const dateElement = document.getElementById('currentDate');
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString('en-US', options);
+        
+        // Username is now handled by Django template system
+        
+        // Mood selection
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMood = this.dataset.mood;
+            });
+        });
+        
+        // Sleep selection
+        document.querySelectorAll('.sleep-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sleep-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedSleep = this.dataset.sleep;
+            });
+        });
+        
+        // Yoga selection
+        document.querySelectorAll('.yoga-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.yoga-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedYoga = this.dataset.yoga;
+            });
+        });
+        
+        function submitEntry() {
+            const comment = document.getElementById('comment').value;
+            
+            if (!selectedMood || !selectedSleep || !selectedYoga) {
+                alert('Please complete all fields! 💫');
+                return;
+            }
+            
+            const entry = {
+                date: today.toISOString(),
+                mood: selectedMood,
+                sleep: selectedSleep,
+                yoga: selectedYoga,
+                comment: comment
+            };
+            
+            // Save to localStorage
+            let entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
+            entries.push(entry);
+            localStorage.setItem('moodEntries', JSON.stringify(entries));
+            
+            alert('🌟 Entry saved! You\'re doing your best! 🌟');
+            
+            // Reset form
+            document.querySelectorAll('.mood-btn, .sleep-btn, .yoga-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('comment').value = '';
+            selectedMood = null;
+            selectedSleep = null;
+            selectedYoga = null;
+        }
+    </script>
+</body>
+</html>

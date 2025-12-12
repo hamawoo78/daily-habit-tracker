@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>Sign In - Do Your Best</title>
+</head>
+<body>
+    <div class="container">
+        <!-- <div class="header">
+            <div class="motto">WELCOME BACK</div>
+            <div class="title">Do<br>Your<br>Best</div>
+            <div class="subtitle">EVERY DAY</div>
+        </div> -->
+        
+        <div class="greeting">
+            <h2>Hello Again! 👋</h2>
+            <div class="date">Sign in to continue your journey</div>
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="Enter your username" class="form-input">
+            </div>
+            
+            <div class="form-section">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password" class="form-input">
+            </div>
+            
+            <button type="submit" class="submit-btn">Sign In ✨</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Don't have an account? <a href="{% url 'signup_view' %}">Sign Up</a></p>
+        </div>
+    </div>
+</body>
+</html>
