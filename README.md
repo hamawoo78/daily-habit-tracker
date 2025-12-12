@@ -1,10 +1,10 @@
-# Daily Habit Tracker 🧠✨
+# Daily Habit Tracker 
 
 A Django-based daily wellness tracker to log mood, sleep, yoga, and reflections.
 
 ## Features
 - User authentication (signup / login)
-- Daily mood tracking with emoji scale
+- Daily mood tracking
 - Sleep duration and yoga tracking
 - Weekly summary chart
 - CSV export of personal data
